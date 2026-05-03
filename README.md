@@ -68,14 +68,16 @@ The NVS partition (which stores your Wi-Fi credentials, Apple HomeKey certificat
 # Ensure you have esptool installed
 pip install esptool
 
-# Flash the updated Matter runtime (ota_0)
-esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash 0x20000 matter_lock_homekit_ota0_esp32c3.bin
+# For an ALREADY setup board (Updates Matter & Provisioner without touching NVS):
+# Replace <target> with esp32c3 or esp32c6
+esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash \
+  0x20000 matter_lock_homekit_ota0_<target>.bin \
+  0x210000 provisioner_ota1_<target>.bin
 
-# Flash the updated Provisioner (ota_1)
-esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash 0x210000 provisioner_ota1_esp32c3.bin
+# For a BRAND NEW board (Flashes everything in one go):
+# The 'full' binary contains the Bootloader, Partition Table, ota_0, and ota_1 combined into a single file!
+esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash 0x0 matter_lock_homekit_full_<target>.bin
 ```
-
-*(If you are setting up a brand new board from scratch, you will also need to flash the bootloader at `0x0` and the partition table at `0xC000` using the files included in the release zip).*
 
 ### 2. Build the Dual Firmware
 Both the Matter app and the Provisioner app must be compiled for your target architecture.
@@ -103,26 +105,11 @@ cd provisioner
 ./flash_to_ota1.sh /dev/cu.usbserial-XXXXXX
 ```
 
-### 5. Generate and Flash the Factory NVS Partition
-Apple's Home Key device-credential TLVs identify the issuer, but they do not carry the issuer Ed25519 public key itself. This means **issuer trust must exist on the device before the HomeKit provisioner can finish enrollment.**
-To pre-seed the device with this trust, generate a minimal shared NVS image containing your Home Key issuer public key:
-
-```bash
-python3 tools/generate_homekey_factory_nvs.py \
-  --issuer-pubkey-hex <issuer_ed25519_public_key_hex>
-```
-This generates `homekey_chip_factory_nvs.bin` in the `tools/out/homekey_factory_nvs/` directory.
-
-Flash this NVS partition to the device at the `nvs` offset defined in `partitions.csv` (0x10000):
-```bash
-python -m esptool -p /dev/cu.usbserial-XXXXXX -b 460800 write_flash 0x10000 tools/out/homekey_factory_nvs/homekey_chip_factory_nvs.bin
-```
-
-### 6. Provisioning Flow
+### 5. Provisioning Flow
 1. **Trigger the Provisioner**: Boot the device and hold the BOOT button (GPIO 9) for 5 seconds. The device will reboot into `ota_1` (The Temporary HomeKey Provisioner).
 2. **Pair to Apple Home**: The device will broadcast a Wi-Fi AP named `MatterLock-HomeKey`. Connect your iPhone to it.
 3. Open the Apple Home app and add the accessory using the setup code `466-37-726`.
-4. Wait for the Home app to generate the HomeKey in your Apple Wallet. The logs will confirm the keys are saved to NVS.
+4. Wait for the Home app to generate the HomeKey in your Apple Wallet. The `pair_callback` will automatically extract the Apple Home Issuer Key and save it securely to NVS.
 5. **Return to Matter**: Hold the BOOT button again for 3 seconds. The device will reboot back to the Matter runtime (`ota_0`).
 6. Pair the lock into Apple Home *again*, this time using the printed Matter setup code.
 
