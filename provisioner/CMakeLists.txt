@@ -17,4 +17,4 @@ set(EXTRA_COMPONENT_DIRS
 project(homekey_provisioner)
 
 # Fix for Arduino-ESP32 I2C Slave compilation on ESP-IDF v5.4 with ESP32-C6
-add_definitions("-Di2c_ll_slave_set_fifo_mode(a,b)=i2c_ll_enable_fifo_mode(a,b)")
+idf_build_set_property(COMPILE_OPTIONS "-Di2c_ll_slave_set_fifo_mode(a,b)=i2c_ll_enable_fifo_mode(a,b)" APPEND)
