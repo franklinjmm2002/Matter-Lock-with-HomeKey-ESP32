@@ -28,7 +28,7 @@ You get the best of both worlds: Universal Matter connectivity for remote app co
 - **Apple HomeKey ISO-DEP Engine**: Offline NFC cryptography to authenticate Apple Wallet passes using `DigitalDoorKey` ECP flows.
 - **Dual-Boot Provisioning**: Automated switching between `ota_1` (HomeKit) and `ota_0` (Matter).
 - **Contiguous Memory Serialization**: Hardened TLV8 serialization engine to prevent heap corruption and Watchdog aborts on memory-constrained (400KB SRAM) RISC-V targets.
-- **ESP32-C3 / ESP32-C6 Support**: Tested on both Wi-Fi 4 and Wi-Fi 6 chips.
+- **Multi-Protocol Support (Wi-Fi & Thread)**: Runs as a standard Wi-Fi accessory on the ESP32-C3, but automatically provisions as a low-power **Matter-over-Thread (OpenThread)** accessory when building for the ESP32-C6!
 
 ## Hardware Setup (Defaults)
 By default, the following GPIOs are used (ESP32-C3 example):
