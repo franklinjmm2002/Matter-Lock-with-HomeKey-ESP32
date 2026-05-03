@@ -50,7 +50,7 @@ jobs:
           idf.py set-target ${{ matrix.target }}
           idf.py build
           # The generated .bin file is what gets flashed to ota_1
-          cp build/provisioner.bin ../dist/provisioner_ota1_${{ matrix.target }}.bin
+          cp build/homekey_provisioner.bin ../dist/provisioner_ota1_${{ matrix.target }}.bin
           cd ..
           
           # Generate a single merged binary for easy flashing on new boards
