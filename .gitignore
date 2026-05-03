@@ -1,0 +1,18 @@
+# Primary Matter App
+build/
+managed_components/
+dependencies.lock
+sdkconfig
+sdkconfig.old
+
+# Secondary HomeKit Provisioner App
+provisioner/build/
+provisioner/managed_components/
+provisioner/dependencies.lock
+provisioner/sdkconfig
+provisioner/sdkconfig.old
+
+# OS / Editor Files
+.DS_Store
+.vscode/
+

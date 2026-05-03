@@ -1,0 +1,15 @@
+menu "Matter Lock HomeKey"
+
+config HOMEKEY_FACTORY_ISSUER_PUBKEY_HEX
+    string "Factory issuer Ed25519 public key (hex)"
+    default ""
+    help
+        Optional 32-byte Ed25519 issuer public key encoded as 64 hex characters.
+        When set, the main ota_0 runtime seeds this issuer into the shared
+        Home Key reader-data NVS model during boot.
+
+        This allows the temporary ota_1 HomeKit provisioner to accept Apple's
+        device-credential enrollment requests later, because those requests
+        only carry an issuer identifier and not the issuer public key.
+
+endmenu

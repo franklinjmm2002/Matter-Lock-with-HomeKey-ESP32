@@ -1,0 +1,77 @@
+if(NOT CMAKE_PROJECT_NAME STREQUAL "homekey_provisioner")
+    idf_component_register()
+    return()
+endif()
+
+set(ARDUINO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../provisioner/managed_components/espressif__arduino-esp32")
+
+idf_component_register(
+    INCLUDE_DIRS
+        "upstream/src"
+        "upstream/src/src/extras"
+        "${ARDUINO_ROOT}/cores/esp32"
+        "${ARDUINO_ROOT}/variants/esp32c6"
+        "${ARDUINO_ROOT}/libraries/ArduinoOTA/src"
+        "${ARDUINO_ROOT}/libraries/AsyncUDP/src"
+        "${ARDUINO_ROOT}/libraries/DNSServer/src"
+        "${ARDUINO_ROOT}/libraries/ESPmDNS/src"
+        "${ARDUINO_ROOT}/libraries/Ethernet/src"
+        "${ARDUINO_ROOT}/libraries/Hash/src"
+        "${ARDUINO_ROOT}/libraries/Network/src"
+        "${ARDUINO_ROOT}/libraries/SPI/src"
+        "${ARDUINO_ROOT}/libraries/Update/src"
+        "${ARDUINO_ROOT}/libraries/WiFi/src"
+        "${CMAKE_CURRENT_LIST_DIR}/../../provisioner/managed_components/espressif__libsodium/port_include"
+        "${CMAKE_CURRENT_LIST_DIR}/../../provisioner/managed_components/espressif__libsodium/libsodium/src/libsodium/include"
+        "${CMAKE_CURRENT_LIST_DIR}/../../provisioner/managed_components/espressif__mdns/include"
+        "${CMAKE_CURRENT_LIST_DIR}/../../provisioner/managed_components/espressif__network_provisioning/include"
+        "$ENV{IDF_PATH}/components/protocomm/include/common"
+        "$ENV{IDF_PATH}/components/protocomm/include/security"
+        "$ENV{IDF_PATH}/components/protocomm/include/transports"
+        "$ENV{IDF_PATH}/components/app_update/include"
+        "$ENV{IDF_PATH}/components/esp_app_format/include"
+        "$ENV{IDF_PATH}/components/esp_bootloader_format/include"
+        "$ENV{IDF_PATH}/components/bootloader_support/include"
+        "$ENV{IDF_PATH}/components/esp_event/include"
+        "$ENV{IDF_PATH}/components/esp_partition/include"
+        "$ENV{IDF_PATH}/components/esp_ringbuf/include"
+        "$ENV{IDF_PATH}/components/esp_timer/include"
+        "$ENV{IDF_PATH}/components/esp_driver_gpio/include"
+        "$ENV{IDF_PATH}/components/esp_driver_gptimer/include"
+        "$ENV{IDF_PATH}/components/esp_driver_ledc/include"
+        "$ENV{IDF_PATH}/components/esp_driver_rmt/include"
+        "$ENV{IDF_PATH}/components/esp_driver_spi/include"
+        "$ENV{IDF_PATH}/components/esp_driver_usb_serial_jtag/include"
+        "$ENV{IDF_PATH}/components/esp_eth/include"
+        "$ENV{IDF_PATH}/components/esp_netif/include"
+        "$ENV{IDF_PATH}/components/spi_flash/include"
+        "$ENV{IDF_PATH}/components/esp_wifi/include"
+        "$ENV{IDF_PATH}/components/nvs_flash/include"
+    REQUIRES
+        app_update
+        bt
+        bootloader_support
+        driver
+        esp_app_format
+        esp_bootloader_format
+        esp_eth
+        esp_event
+        esp_partition
+        esp_timer
+        esp_wifi
+        esp_driver_gpio
+        esp_driver_gptimer
+        esp_driver_ledc
+        esp_ringbuf
+        esp_driver_rmt
+        esp_driver_spi
+        esp_netif
+        spi_flash
+        espressif__arduino-esp32
+        espressif__libsodium
+        espressif__mdns
+        espressif__network_provisioning
+        mbedtls
+        nvs_flash
+        protocomm
+)

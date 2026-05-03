@@ -1,0 +1,15 @@
+idf_component_register(
+    SRCS
+        "homekey_boot_mode_manager.cpp"
+        "homekey_factory_data.cpp"
+        "homekey_provisioning_manager.cpp"
+        "homekey_reader_data_manager.cpp"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        app_update
+        esp_partition
+        mbedtls
+        nvs_flash
+        DigitalDoorKey
+)

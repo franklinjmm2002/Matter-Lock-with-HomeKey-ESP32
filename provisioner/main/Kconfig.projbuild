@@ -1,0 +1,15 @@
+menu "Home Key Provisioner"
+
+config HOMEKEY_FACTORY_ISSUER_PUBKEY_HEX
+    string "Factory issuer Ed25519 public key (hex)"
+    default ""
+    help
+        Optional 32-byte Ed25519 issuer public key encoded as 64 hex characters.
+        When set, the ota_1 Home Key provisioner will automatically seed this
+        issuer into shared reader data before Apple Home starts endpoint
+        enrollment over the HomeKit NFCAccess service.
+
+        This is required because Apple's device-credential enrollment TLVs only
+        carry an issuer identifier, not the issuer public key itself.
+
+endmenu

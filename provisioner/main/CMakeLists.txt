@@ -1,0 +1,17 @@
+idf_component_register(
+    SRCS
+        "app_main.cpp"
+    PRIV_REQUIRES
+        app_update
+        esp_partition
+        esp_system
+        esp_bsp_devkit
+        espressif__button
+        homekey_provisioning_core
+        homespan_port
+        mbedtls
+        nvs_flash
+        web_config
+    INCLUDE_DIRS
+        "."
+)
