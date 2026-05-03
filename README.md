@@ -57,6 +57,26 @@ Ensure you have ESP-IDF v5.4.4 and ESP-Matter configured in your environment.
 idf.py set-target esp32c3
 ```
 
+### Using Pre-Compiled CI Binaries (Recommended for Updating)
+If you just want to update your firmware and don't want to set up the ESP-Matter build environment, you can download the latest pre-compiled binaries from the **GitHub Releases** page.
+You can flash these binaries directly to your ESP32 using `esptool.py`. 
+
+**What happens to the NVS partition?**
+The NVS partition (which stores your Wi-Fi credentials, Apple HomeKey certificates, and Matter pairing data) is located at offset `0x10000`. When you flash the specific application binaries to their respective offsets (`0x20000` and `0x210000`), **the NVS partition is completely untouched and safe**. You will not lose your keys or need to repair the lock.
+
+```bash
+# Ensure you have esptool installed
+pip install esptool
+
+# Flash the updated Matter runtime (ota_0)
+esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash 0x20000 matter_lock_homekit_ota0_esp32c3.bin
+
+# Flash the updated Provisioner (ota_1)
+esptool.py -p /dev/tty.usbmodem* -b 460800 write_flash 0x210000 provisioner_ota1_esp32c3.bin
+```
+
+*(If you are setting up a brand new board from scratch, you will also need to flash the bootloader at `0x0` and the partition table at `0xC000` using the files included in the release zip).*
+
 ### 2. Build the Dual Firmware
 Both the Matter app and the Provisioner app must be compiled for your target architecture.
 ```bash
@@ -114,7 +134,6 @@ python -m esptool -p /dev/cu.usbserial-XXXXXX -b 460800 write_flash 0x10000 tool
 - **mDNS / Bonjour for Web Config:** Allow access to the configuration portal via a `.local` hostname instead of an IP address.
 - **Dynamic Wi-Fi Provisioning:** Allow Wi-Fi credentials to be updated over BLE or the web portal without erasing NVS.
 - **Custom PCB Design:** Provide a KiCad/EasyEDA design for a clean, jumper-free integration of the ESP32, Relay, and PN532.
-- **GitHub Actions (CI/CD):** Add automated workflows to compile `ota_0` and `ota_1` on every push and attach pre-compiled binaries to GitHub Releases.
 
 ## Credits
 
