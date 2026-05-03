@@ -1,0 +1,54 @@
+menu "PN532 Configuration"
+
+menu "SPI"
+
+  config PN532_SCK
+      int "PN532 SCK GPIO"
+    range 0 64
+    default 18 if IDF_TARGET_ESP32
+    default 21 if IDF_TARGET_ESP32C6
+    default 4 if IDF_TARGET_ESP32C3
+    default 12 if IDF_TARGET_ESP32S3
+    help
+      GPIO number (IOxx) for SPI clock.
+
+  config PN532_SS
+      int "PN532 SS GPIO"
+    range 0 64
+    default 5 if IDF_TARGET_ESP32
+    default 18 if IDF_TARGET_ESP32C6
+    default 7 if IDF_TARGET_ESP32C3
+    default 10 if IDF_TARGET_ESP32S3
+    help
+      GPIO number (IOxx) for SPI slave select.
+
+  config PN532_MISO
+      int "PN532 MISO GPIO"
+    range 0 64
+    default 19 if IDF_TARGET_ESP32
+    default 20 if IDF_TARGET_ESP32C6
+    default 5 if IDF_TARGET_ESP32C3
+    default 13 if IDF_TARGET_ESP32S3
+    help
+      GPIO number (IOxx) for SPI MISO.
+
+  config PN532_MOSI
+      int "PN532 MOSI GPIO"
+    range 0 64
+    default 23 if IDF_TARGET_ESP32
+    default 19 if IDF_TARGET_ESP32C6
+    default 6 if IDF_TARGET_ESP32C3
+    default 11 if IDF_TARGET_ESP32S3
+    help
+      GPIO number (IOxx) for SPI MOSI.
+
+endmenu # SPI
+
+config PN532_IRQ
+    int "PN532 IRQ GPIO"
+  range -1 46
+  default -1
+  help
+    GPIO number (IOxx) for IRQ signal.
+
+endmenu
