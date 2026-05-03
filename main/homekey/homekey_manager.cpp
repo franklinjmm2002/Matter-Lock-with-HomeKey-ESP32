@@ -24,15 +24,6 @@ using namespace chip::app::Clusters;
 namespace {
 constexpr const char *TAG = "homekey_manager";
 HomeKeyManager gHomeKeyManager;
-esp_timer_handle_t s_relock_timer = nullptr;
-
-void auto_relock_timer_cb(void* arg) {
-    ESP_LOGI(TAG, "Auto-relock timer expired, locking door...");
-    chip::DeviceLayer::PlatformMgr().LockChipStack();
-    DoorLockServer::Instance().SetLockState(1, DoorLock::DlLockState::kLocked); // Default endpoint 1
-    chip::DeviceLayer::PlatformMgr().UnlockChipStack();
-    trigger_lock_action(false);
-}
 } // namespace
 
 HomeKeyManager & HomeKeyMgr()
@@ -71,9 +62,6 @@ bool HomeKeyManager::LockFromMatter(const Optional<ByteSpan> & pin, DoorLock::Op
     bool success = mLockManager->Lock(mEndpointId, pin, err);
     if (success) {
         trigger_lock_action(false);
-        if (s_relock_timer) {
-            esp_timer_stop(s_relock_timer);
-        }
     }
     return success;
 }
@@ -84,29 +72,6 @@ bool HomeKeyManager::UnlockFromMatter(const Optional<ByteSpan> & pin, DoorLock::
     bool success = mLockManager->Unlock(mEndpointId, pin, err);
     if (success) {
         trigger_lock_action(true);
-        
-        // Auto-relock logic
-        if (!s_relock_timer) {
-            esp_timer_create_args_t timer_args = {};
-            timer_args.callback = auto_relock_timer_cb;
-            timer_args.name = "auto_relock";
-            esp_timer_create(&timer_args, &s_relock_timer);
-        }
-        esp_timer_stop(s_relock_timer);
-        
-        uint32_t relock_time_us = 3000000;
-        esp_matter::node_t *node = esp_matter::node::get();
-        esp_matter::endpoint_t *ep = esp_matter::endpoint::get(node, mEndpointId);
-        esp_matter::cluster_t *cl = esp_matter::cluster::get(ep, chip::app::Clusters::DoorLock::Id);
-        esp_matter::attribute_t *attr = esp_matter::attribute::get(cl, chip::app::Clusters::DoorLock::Attributes::AutoRelockTime::Id);
-        if (attr) {
-            esp_matter_attr_val_t val = esp_matter_invalid(NULL);
-            esp_matter::attribute::get_val(attr, &val);
-            if (val.type == ESP_MATTER_VAL_TYPE_UINT32 && val.val.u32 > 0) {
-                relock_time_us = val.val.u32 * 1000000;
-            }
-        }
-        esp_timer_start_once(s_relock_timer, relock_time_us);
     }
     return success;
 }
@@ -163,35 +128,8 @@ bool HomeKeyManager::SetLockStateFromSource(DoorLock::DlLockState lockState, Acc
 
     if (lockState == DoorLock::DlLockState::kUnlocked) {
         trigger_lock_action(true);
-        
-        // Auto-relock logic
-        if (!s_relock_timer) {
-            esp_timer_create_args_t timer_args = {};
-            timer_args.callback = auto_relock_timer_cb;
-            timer_args.name = "auto_relock";
-            esp_timer_create(&timer_args, &s_relock_timer);
-        }
-        esp_timer_stop(s_relock_timer);
-        
-        uint32_t relock_time_us = 3000000;
-        esp_matter::node_t *node = esp_matter::node::get();
-        esp_matter::endpoint_t *ep = esp_matter::endpoint::get(node, mEndpointId);
-        esp_matter::cluster_t *cl = esp_matter::cluster::get(ep, chip::app::Clusters::DoorLock::Id);
-        esp_matter::attribute_t *attr = esp_matter::attribute::get(cl, chip::app::Clusters::DoorLock::Attributes::AutoRelockTime::Id);
-        if (attr) {
-            esp_matter_attr_val_t val = esp_matter_invalid(NULL);
-            esp_matter::attribute::get_val(attr, &val);
-            if (val.type == ESP_MATTER_VAL_TYPE_UINT32 && val.val.u32 > 0) {
-                relock_time_us = val.val.u32 * 1000000;
-            }
-        }
-        esp_timer_start_once(s_relock_timer, relock_time_us);
-
     } else if (lockState == DoorLock::DlLockState::kLocked) {
         trigger_lock_action(false);
-        if (s_relock_timer) {
-            esp_timer_stop(s_relock_timer);
-        }
     }
 
     return true;

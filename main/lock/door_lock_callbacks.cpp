@@ -9,6 +9,7 @@
 #include <esp_log.h>
 #include "door_lock_manager.h"
 #include "homekey_manager.h"
+#include "web_config.h"
 #include <lib/core/DataModelTypes.h>
 
 static const char *TAG = "doorlock_callback";
@@ -112,4 +113,5 @@ DlStatus emberAfPluginDoorLockSetSchedule(chip::EndpointId endpointId, uint8_t h
 void emberAfPluginDoorLockOnAutoRelock(chip::EndpointId endpointId)
 {
     ESP_LOGI(TAG, "Door auto relock");
+    trigger_lock_action(false);
 }
