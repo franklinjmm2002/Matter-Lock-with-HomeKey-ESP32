@@ -17,6 +17,7 @@
 
 #include <esp_timer.h>
 #include <esp_matter.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
 
 using namespace chip;
 using namespace chip::app::Clusters;
@@ -24,6 +25,15 @@ using namespace chip::app::Clusters;
 namespace {
 constexpr const char *TAG = "homekey_manager";
 HomeKeyManager gHomeKeyManager;
+
+esp_timer_handle_t s_auto_relock_timer = nullptr;
+
+void auto_relock_timer_cb(void* arg) {
+    ESP_LOGI(TAG, "Auto-relock timer expired");
+    DoorLock::OperationErrorEnum err;
+    HomeKeyMgr().LockFromSource(HomeKeyManager::AccessSource::kHomeKey, err);
+}
+
 } // namespace
 
 HomeKeyManager & HomeKeyMgr()
@@ -128,8 +138,25 @@ bool HomeKeyManager::SetLockStateFromSource(DoorLock::DlLockState lockState, Acc
 
     if (lockState == DoorLock::DlLockState::kUnlocked) {
         trigger_lock_action(true);
+        
+        uint32_t auto_relock_time = 0;
+        if (DoorLock::Attributes::AutoRelockTime::Get(mEndpointId, &auto_relock_time) == chip::Protocols::InteractionModel::Status::Success && auto_relock_time > 0) {
+            if (s_auto_relock_timer == nullptr) {
+                esp_timer_create_args_t timer_args = {};
+                timer_args.callback = auto_relock_timer_cb;
+                timer_args.name = "auto_relock";
+                esp_timer_create(&timer_args, &s_auto_relock_timer);
+            }
+            esp_timer_stop(s_auto_relock_timer);
+            esp_timer_start_once(s_auto_relock_timer, auto_relock_time * 1000000ULL);
+            ESP_LOGI(TAG, "Auto-relock timer started for %lu seconds", auto_relock_time);
+        }
     } else if (lockState == DoorLock::DlLockState::kLocked) {
         trigger_lock_action(false);
+        if (s_auto_relock_timer != nullptr) {
+            esp_timer_stop(s_auto_relock_timer);
+            ESP_LOGI(TAG, "Auto-relock timer stopped");
+        }
     }
 
     return true;

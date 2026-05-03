@@ -352,14 +352,14 @@ extern "C" void app_main()
 
     door_lock::config_t door_lock_config;
     cluster::door_lock::feature::credential_over_the_air_access::config_t cota_config;
-    cluster::door_lock::feature::pin_credential::config_t pin_credential_config;
+    // cluster::door_lock::feature::pin_credential::config_t pin_credential_config;
     cluster::door_lock::feature::user::config_t user_config;
     // endpoint handles can be used to add/modify clusters.
     endpoint_t *endpoint = door_lock::create(node, &door_lock_config, ENDPOINT_FLAG_NONE, NULL);
     ABORT_APP_ON_FAILURE(endpoint != nullptr, ESP_LOGE(TAG, "Failed to create door lock endpoint"));
     cluster_t *door_lock_cluster = cluster::get(endpoint, DoorLock::Id);
     cluster::door_lock::feature::credential_over_the_air_access::add(door_lock_cluster, &cota_config);
-    cluster::door_lock::feature::pin_credential::add(door_lock_cluster, &pin_credential_config);
+    // cluster::door_lock::feature::pin_credential::add(door_lock_cluster, &pin_credential_config);
     cluster::door_lock::feature::user::add(door_lock_cluster, &user_config);
     cluster::door_lock::attribute::create_auto_relock_time(door_lock_cluster, 5);
 
