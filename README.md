@@ -44,7 +44,7 @@ By default, the following GPIOs are used (ESP32-C3 example):
 ### Web-Based Hardware Configuration
 You do not need to recompile the firmware to change GPIO pins! A lightweight HTTP server runs natively on the device at port `8080` to allow runtime configuration.
 1. Connect the ESP32 to your Wi-Fi network (or connect your phone to the provisioner SoftAP).
-2. Open a web browser and navigate to `http://<device-ip>:8080`.
+2. Open a web browser and navigate to `http://matter-lock.local:8080` (or `http://<device-ip>:8080`).
 3. You can dynamically modify the SPI pins, the boot button, the relay pin, the status LED, and configure the **Relay Active Level** (High/Low) to match your physical relay logic.
 4. Click "Save & Reboot" to apply the changes. Settings are persisted to NVS automatically.
 
@@ -110,7 +110,7 @@ cd provisioner
 2. **Pair to Apple Home**: The device will broadcast a Wi-Fi AP named `MatterLock-HomeKey`. Connect your iPhone to it.
 3. Open the Apple Home app and add the accessory using the setup code `466-37-726`.
 4. Wait for the Home app to generate the HomeKey in your Apple Wallet. The `pair_callback` will automatically extract the Apple Home Issuer Key and save it securely to NVS.
-5. **Return to Matter**: Hold the BOOT button again for 3 seconds. The device will reboot back to the Matter runtime (`ota_0`).
+5. **Return to Matter**: Once HomeKey provisioning succeeds, the device will automatically reboot back to the Matter runtime (`ota_0`). If you need to manually return to Matter without completing provisioning, you can hold the BOOT button again for 3 seconds.
 6. Pair the lock into Apple Home *again*, this time using the printed Matter setup code.
 
 ## Roadmap & Future Enhancements
@@ -118,7 +118,6 @@ cd provisioner
 - **Secure Boot V2 & Flash Encryption:** Enabling hardware flash encryption to prevent physical extraction of Apple HomeKey cryptography certificates from NVS.
 - **Deep Sleep Optimization:** Implement PN532 low-power IRQ wake-up or capacitive touch wake-up to minimize power draw for battery-operated deployments.
 - **Matter Battery Cluster:** Expose the ESP32's ADC reading as a Matter Battery Level cluster for visibility in the Apple/Google Home app.
-- **mDNS / Bonjour for Web Config:** Allow access to the configuration portal via a `.local` hostname instead of an IP address.
 - **Dynamic Wi-Fi Provisioning:** Allow Wi-Fi credentials to be updated over BLE or the web portal without erasing NVS.
 - **Custom PCB Design:** Provide a KiCad/EasyEDA design for a clean, jumper-free integration of the ESP32, Relay, and PN532.
 

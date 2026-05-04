@@ -12,6 +12,7 @@
 #include "driver/gpio.h"
 #include "mbedtls/base64.h"
 #include "esp_ota_ops.h"
+#include <mdns.h>
 
 static const char* TAG = "WebConfig";
 static WebConfig* g_config = nullptr;
@@ -269,6 +270,17 @@ extern "C" esp_err_t web_config_server_start(WebConfig* config) {
         httpd_register_uri_handler(server, &reboot0_uri);
 
         ESP_LOGI(TAG, "Web Config Server started on port 8080");
+
+        // Initialize mDNS for Web Config
+        esp_err_t err = mdns_init();
+        if (err == ESP_OK || err == ESP_ERR_INVALID_STATE) {
+            mdns_hostname_set("matter-lock");
+            mdns_instance_name_set("Matter Lock Web Config");
+            mdns_service_add("Web Config", "_http", "_tcp", 8080, NULL, 0);
+            ESP_LOGI(TAG, "mDNS initialized, access via http://matter-lock.local:8080");
+        } else {
+            ESP_LOGW(TAG, "mDNS failed to initialize: %d", err);
+        }
     } else {
         ESP_LOGE(TAG, "Failed to start Web Config Server");
     }
